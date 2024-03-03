@@ -71,6 +71,8 @@ void CudaKeySearchDevice::init(const secp256k1::uint256 &start, int compression,
     _stride = stride;
 
     _randomMode = randomMode;
+    
+    _end = end;
 
     cudaCall(cudaSetDevice(_device));
 
