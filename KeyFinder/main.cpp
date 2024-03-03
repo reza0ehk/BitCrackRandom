@@ -54,6 +54,8 @@ typedef struct {
     unsigned int elapsed = 0;
     secp256k1::uint256 stride = 1;
 
+    bool randomMode = false;
+
     bool follow = false;
 }RunConfig;
 
@@ -204,6 +206,7 @@ void usage()
     printf("-i, --in FILE           Read addresses from FILE, one per line\n");
     printf("-o, --out FILE          Write keys to FILE\n");
     printf("-f, --follow            Follow text output\n");
+    printf("-r, --random            Use Randm Values from keyspace\n");
     printf("--list-devices          List available devices\n");
     printf("--keyspace KEYSPACE     Specify the keyspace:\n");
     printf("                          START:END\n");
@@ -378,6 +381,10 @@ int run()
     Logger::log(LogLevel::Info, "Ending at:   " + _config.endKey.toString());
     Logger::log(LogLevel::Info, "Counting by: " + _config.stride.toString());
 
+    if (_config.randomMode) {
+        Logger::log(LogLevel::Info, "Generating random starting points");
+    }
+	
     try {
 
         _lastUpdate = util::getSystemTime();
@@ -401,7 +408,7 @@ int run()
         // Get device context
         KeySearchDevice *d = getDeviceContext(_devices[_config.device], _config.blocks, _config.threads, _config.pointsPerThread);
 
-        KeyFinder f(_config.nextKey, _config.endKey, _config.compression, d, _config.stride);
+        KeyFinder f(_config.nextKey, _config.endKey, _config.compression, d, _config.stride, _config.randomMode);
 
         f.setResultCallback(resultCallback);
         f.setStatusInterval(_config.statusInterval);
@@ -512,7 +519,8 @@ int main(int argc, char **argv)
 	parser.add("-i", "--in", true);
 	parser.add("-o", "--out", true);
     parser.add("-f", "--follow", false);
-    parser.add("", "--list-devices", false);
+    parser.add("-r", "--list-devices", false);
+    parser.add("", "--random", false);
     parser.add("", "--keyspace", true);
     parser.add("", "--continue", true);
     parser.add("", "--share", true);
@@ -557,7 +565,9 @@ int main(int argc, char **argv)
                 listDevices = true;
             } else if(optArg.equals("", "--continue")) {
                 _config.checkpointFile = optArg.arg;
-            } else if(optArg.equals("", "--keyspace")) {
+            } else if (optArg.equals("-r", "--random")) {
+		_config.randomMode = true;
+	    } else if(optArg.equals("", "--keyspace")) {
                 secp256k1::uint256 start;
                 secp256k1::uint256 end;
 
@@ -609,6 +619,11 @@ int main(int argc, char **argv)
 			return 1;
 		}
 	}
+
+    if (optContinue && _config.randomMode) {
+        Logger::log(LogLevel::Error, "Random and continue mode cannot be used together.");
+        return 1;
+    }
 
     if(listDevices) {
         printDeviceList(_devices);
