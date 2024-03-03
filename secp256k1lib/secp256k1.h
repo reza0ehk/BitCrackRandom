@@ -10,6 +10,30 @@
 
 namespace secp256k1 {
 
+	class Random
+	{
+		std::random_device rd;
+		std::mt19937* gen;
+		std::uniform_int_distribution<unsigned int>* distr;
+
+	public:
+
+		Random()
+		{
+			gen = new std::mt19937(rd());
+			distr = new std::uniform_int_distribution<unsigned int>(0, 0xffffffff);
+		}
+
+		unsigned int getChunk() {
+			return (*distr)(*gen);
+		}
+
+		~Random() {
+			delete gen;
+			delete distr;
+		}
+	};
+	
 	class uint256 {
 
 	public:
