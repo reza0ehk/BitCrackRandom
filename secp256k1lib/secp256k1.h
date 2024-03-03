@@ -6,6 +6,7 @@
 #include<string.h>
 #include<string>
 #include<vector>
+#include <random>
 
 namespace secp256k1 {
 
@@ -255,7 +256,7 @@ namespace secp256k1 {
 
 			return (this->v[n / 32] & (0x1 << (n % 32))) != 0;
 		}
-		
+
 		int getBitRange()
 		{
 			int ret = 0;
