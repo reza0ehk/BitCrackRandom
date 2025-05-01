@@ -1,16 +1,17 @@
 name: Build Windows Executable
 
 on:
-  push:
+  workflow_dispatch:        # اجرای دستی از GitHub
+  push:                     # اجرای خودکار هنگام push به main
     branches:
       - main
-  pull_request:
+  pull_request:             # اجرای خودکار برای pull request به main
     branches:
       - main
 
 jobs:
   build:
-    runs-on: windows-latest  # استفاده از ماشین مجازی ویندوز
+    runs-on: windows-latest  # استفاده از ماشین ویندوزی GitHub
 
     steps:
       - name: Checkout code
