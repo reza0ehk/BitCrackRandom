@@ -1,17 +1,16 @@
 name: Build Windows Executable
 
 on:
-  workflow_dispatch:        # اجرای دستی از GitHub
-  push:                     # اجرای خودکار هنگام push به main
+  push:
     branches:
       - main
-  pull_request:             # اجرای خودکار برای pull request به main
+  pull_request:
     branches:
       - main
 
 jobs:
   build:
-    runs-on: windows-latest  # استفاده از ماشین ویندوزی GitHub
+    runs-on: windows-latest  # استفاده از ماشین مجازی ویندوز
 
     steps:
       - name: Checkout code
@@ -21,6 +20,9 @@ jobs:
         run: |
           choco install mingw -y
           echo "C:\ProgramData\chocolatey\bin" >> $env:GITHUB_PATH
+
+      - name: Create lib directory
+        run: mkdir lib
 
       - name: Build with MinGW
         run: |
