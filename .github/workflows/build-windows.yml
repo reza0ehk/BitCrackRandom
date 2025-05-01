@@ -10,19 +10,21 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # استفاده از ماشین مجازی ویندوز
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install MinGW
+      - name: Install MinGW and CMake
         run: |
           choco install mingw -y
+          choco install cmake -y
           echo "C:\ProgramData\chocolatey\bin" >> $env:GITHUB_PATH
 
-      - name: Create lib directory
-        run: mkdir lib
+      - name: Prepare directories
+        run: |
+          mkdir -p lib
 
       - name: Build with MinGW
         run: |
